@@ -2,14 +2,14 @@ from .environment import Environment
 from tqdm import tqdm
 
 class Simulator:
-    def __init__(self, homs: list, ttts: list) -> None:
+    def __init__(self, homs: list = [], ttts: list = []) -> None:
         self.homs = homs
         self.ttts = ttts
 
     def run_single(self, hm, ttt, max_time):
         env = Environment(hm, ttt)
-        timestep = ttt / 2
-        for _ in tqdm(range(int(max_time / timestep))):
+        timestep = 16 #ms
+        for _ in range(int(max_time / timestep)):
             env.move_UEs(timestep)
         return env.hopps, env.hos
     
