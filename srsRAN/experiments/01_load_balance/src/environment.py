@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class Environment:
-    def __init__(self) -> None:
+    def __init__(self, hm, ttt) -> None:
         # HEXAGON MATH
         r = 500 # radius of hexagon
         a = r * np.sqrt(3) / 2 # Apothem of hexagon
@@ -20,6 +20,10 @@ class Environment:
                 # print(location)
                 sBS_cells.append(SmallBS(i*3+j+3,location[0], location[1], mBS_cells[i]))
 
+        self.mBS_cells = mBS_cells
+        self.sBS_cells = sBS_cells
+        self.cells = mBS_cells + sBS_cells
+
         np.random.seed(0)
         ue_points = []
         ue_bs = []
@@ -30,24 +34,25 @@ class Environment:
                     ue_bs.append(i)
                     ue_points.append([float(x), float(y)])
                     break
-            
-        colours = {mBS_cells[0]: 'red', mBS_cells[1]: 'green', mBS_cells[2]: 'blue'}
 
+        M_PER_MS = 3600
         UEs = []
         for i in range(1000):
             if i < 400:
-                UEs.append(UE(ue_points[i][0], ue_points[i][1], 0, bs=ue_bs[i]))
+                UEs.append(UE(ue_points[i][0], ue_points[i][1], 0, self.cells))
             elif i < 600:
-                UEs.append(UE(ue_points[i][0], ue_points[i][1], 5/3.6, bs=ue_bs[i]))
+                UEs.append(UE(ue_points[i][0], ue_points[i][1], 5/M_PER_MS, self.cells))
             elif i < 800:
-                UEs.append(UE(ue_points[i][0], ue_points[i][1], 25/3.6, bs=ue_bs[i]))
+                UEs.append(UE(ue_points[i][0], ue_points[i][1], 25/M_PER_MS, self.cells))
             else:
-                UEs.append(UE(ue_points[i][0], ue_points[i][1], 60/3.6, bs=ue_bs[i]))
+                UEs.append(UE(ue_points[i][0], ue_points[i][1], 60/M_PER_MS, self.cells))
         
-        self.mBS_cells = mBS_cells
-        self.sBS_cells = sBS_cells
-        self.cells = mBS_cells + sBS_cells
+        
         self.ues = UEs
+        self.hopps = 0
+        self.hos = 0
+        self.hm = hm
+        self.ttt = ttt
     
     def plot_environment(self):
         bs_colours = {
@@ -79,7 +84,7 @@ class Environment:
         plt.ylim(0, 1750)
         plt.legend()
     
-    def move_UEs(self, dt=60):
+    def move_UEs(self, dt=1, debug=False):
         for i, ue in enumerate(self.ues):
             ue.move(dt)
             old_bs = ue.bs
@@ -88,6 +93,8 @@ class Environment:
                     break
             else:
                 ue.move_back(dt)
-            ok = ue.handover(self.cells, 4, .128, dt)
+            ok, hopp = ue.handover(self.cells, self.hm, self.ttt, dt)
             if ok:
-                print(f"HANDOVER: UE{i}: {old_bs}->{ue.bs}")
+                self.hos += 1
+                if debug: print(f"HANDOVER: UE{i}: {old_bs}->{ue.bs}"+(" (PING PONG)" if hopp else ""))
+            if hopp: self.hopps += 1

@@ -61,16 +61,33 @@ class SmallBS(BS):
         
 
 class UE:
-    def __init__(self, x, y, speed, bs=None, color='black'):
+    def __init__(self, x, y, speed, cells):
         self.x = x
         self.y = y
-        self.bs = bs
+        self.previous_bs = None
+        self.bs = self.measurement_report(cells)[0][0]
         self.speed = speed
         self.angle = np.random.uniform(0, 2*np.pi)
-        self.color = color
         self.ttt = 0
+        self.hopp_timer = 0
     
     def handover(self, cells, hm, ttt, dt):
+        # Check for ping pong
+        old_bs = self.bs
+        if self._handover(cells, hm, ttt, dt):
+            self.hopp_timer += dt
+            if self.previous_bs == self.bs and self.hopp_timer < 1000: # Ping pong
+                self.previous_bs = old_bs
+                self.hopp_timer = 0
+                return True, True # OK, ping pong
+            else:
+                self.previous_bs = old_bs
+                self.hopp_timer = 0
+                return True, False
+        else:
+            return False, False
+
+    def _handover(self, cells, hm, ttt, dt):
         mr = self.measurement_report(cells)
         if self.bs is None:
             self.bs = mr[0][0]
@@ -98,10 +115,10 @@ class UE:
 
     def move(self, dt):
         # Change angle slightly
-        self.angle += np.random.normal(-np.pi/12, np.pi/12)
         self.x += self.speed * np.cos(self.angle) * dt
         self.y += self.speed * np.sin(self.angle) * dt
-    
+        self.angle += np.random.uniform(-np.pi/4, np.pi/4)
+
     def move_back(self, dt):
         self.x -= self.speed * np.cos(self.angle) * dt
         self.y -= self.speed * np.sin(self.angle) * dt
