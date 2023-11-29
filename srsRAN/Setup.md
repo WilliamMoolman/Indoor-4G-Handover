@@ -75,7 +75,7 @@ mongodb
 ```sh
 # Install mongodb [open5gs requirement]
 sudo apt update
-sudo apt install gnupg
+sudo apt install gnupg # Enter
 curl -fsSL https://pgp.mongodb.com/server-6.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-6.0.gpg --dearmor
 sudo apt install gnupg
 echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
@@ -90,15 +90,20 @@ open5gs
 # Install open5gs
 sudo add-apt-repository ppa:open5gs/latest
 sudo apt update
-sudo apt install open5gs
+sudo apt -y install open5gs
 ```
 
 **Modify open5gs config to interface with srsRAN**
 /etc/open5gs/mme.yaml
 ```yaml
-332 mcc: 901
-338 mcc: 901
-340 tac: 7
+332 mcc: 901 (999)
+338 mcc: 901(999)
+340 tac: 7 (1)
+```
+Or use sed
+```sh
+sudo sed -i.bkp 's/mcc: 999/mcc: 901/' /etc/open5gs/mme.yaml
+sudo sed -i.bkp 's/tac: 1/tac: 7/' /etc/open5gs/mme.yaml
 ```
 
 ```shell
