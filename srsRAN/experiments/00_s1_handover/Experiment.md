@@ -34,5 +34,25 @@ In the case where `hysteresis` is 5, handover occures at a 5dB margin.
 
 **New Hypothesis:** Handover occures at 3dB, or the `hysteresis` value, whichever is higher. 
 
+## Test 3 (changing source)
+**Hypothesis:** In the code there must be a 3dB offset to the added `hysteresis` value
+We are specifically looking at an A3 event. In the srsRAN_4G codebase, we find this code:
+*srsue/src/stack/rrc/rrc_meas.cc:864*
+```cpp
+case eutra_event_s::event_id_c_::types::event_a3:
+    Off             = 0.5 * event_id.event_a3().a3_offset;
+    enter_condition = Mn + Ofn + Ocn - hyst > Ms + Ofs + Ocs + Off;
+    exit_condition  = Mn + Ofn + Ocn + hyst < Ms + Ofs + Ocs + Off;
+    break;
+```
+Here we can see there are multiple confounding variables. Variables suffixed with n are related to the target cell, -s related to source cell. Of is a frequency specific offset, and Oc is a cell specific offset. To determine which of the variables is at play, `Off` the A3 offset is set to zero and Test 1 is reran
+
+### Results
+We now see handover occuring the moment the target cell has a higher RSRP. On further examination, the A3 offset is specified in the `rr.conf` file under `a3_offset = 6`. What is not currently understood is why the offset is halved in the code, along with the Hysteresis on line 794
+```
+double hyst = 0.5 * report_cfg.trigger_type.event().hysteresis;
+```
+Furthermore, the code seems to exist in the `srsue` component, however handover is triggered by the enb. To investigate further.
+
 # Bibliograph
 [1] K. Powell, A. Yingst, T. F. Rahman, and V. Marojevic, ‘Handover Experiments with UAVs: Software Radio Tools and Experimental Research Platform’, in Proceedings of the 15th ACM Workshop on Wireless Network Testbeds, Experimental evaluation & CHaracterization, in WiNTECH’21. New York, NY, USA: Association for Computing Machinery, Oct. 2021, pp. 39–45. doi: 10.1145/3477086.3480841.
