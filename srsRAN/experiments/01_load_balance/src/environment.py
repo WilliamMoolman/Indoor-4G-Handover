@@ -35,24 +35,24 @@ class Environment:
                     ue_points.append([float(x), float(y)])
                     break
 
-        M_PER_MS = 3600
         UEs = []
         for i in range(1000):
             if i < 400:
                 UEs.append(UE(ue_points[i][0], ue_points[i][1], 0, self.cells))
             elif i < 600:
-                UEs.append(UE(ue_points[i][0], ue_points[i][1], 5/M_PER_MS, self.cells))
+                UEs.append(UE(ue_points[i][0], ue_points[i][1], 5, self.cells))
             elif i < 800:
-                UEs.append(UE(ue_points[i][0], ue_points[i][1], 25/M_PER_MS, self.cells))
+                UEs.append(UE(ue_points[i][0], ue_points[i][1], 25, self.cells))
             else:
-                UEs.append(UE(ue_points[i][0], ue_points[i][1], 60/M_PER_MS, self.cells))
+                UEs.append(UE(ue_points[i][0], ue_points[i][1], 60, self.cells))
         
         
         self.ues = UEs
-        self.hopps = 0
-        self.hos = 0
+       
         self.hm = hm
         self.ttt = ttt
+
+        self.stats = {0: [0,0], 5: [0,0], 25: [0,0], 60: [0,0]}
     
     def plot_environment(self):
         bs_colours = {
@@ -95,6 +95,7 @@ class Environment:
                 ue.move_back(dt)
             ok, hopp = ue.handover(self.cells, self.hm, self.ttt, dt)
             if ok:
+                self.stats[ue.speed][0] += 1
                 self.hos += 1
                 if debug: print(f"HANDOVER: UE{i}: {old_bs}->{ue.bs}"+(" (PING PONG)" if hopp else ""))
             if hopp: self.hopps += 1

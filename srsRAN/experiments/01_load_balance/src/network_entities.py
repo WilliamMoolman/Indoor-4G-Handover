@@ -114,9 +114,10 @@ class UE:
             return False
 
     def move(self, dt):
+        M_PER_MS = 3600
         # Change angle slightly
-        self.x += self.speed * np.cos(self.angle) * dt
-        self.y += self.speed * np.sin(self.angle) * dt
+        self.x += self.speed/M_PER_MS * np.cos(self.angle) * dt
+        self.y += self.speed/M_PER_MS * np.sin(self.angle) * dt
         self.angle += np.random.uniform(-np.pi/4, np.pi/4)
 
     def move_back(self, dt):

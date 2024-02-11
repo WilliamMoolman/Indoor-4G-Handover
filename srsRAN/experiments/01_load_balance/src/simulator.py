@@ -1,5 +1,6 @@
 from .environment import Environment
-from tqdm import tqdm
+# from tqdm import tqdm
+
 
 class Simulator:
     def __init__(self, homs: list = [], ttts: list = []) -> None:
@@ -8,11 +9,11 @@ class Simulator:
 
     def run_single(self, hm, ttt, max_time):
         env = Environment(hm, ttt)
-        timestep = 16 #ms
+        timestep = 16  # ms
         for _ in range(int(max_time / timestep)):
             env.move_UEs(timestep)
-        return env.hopps, env.hos
-    
+        return env.hm, env.ttt
+
     def run(self):
         results = {}
         for hom in self.homs:
