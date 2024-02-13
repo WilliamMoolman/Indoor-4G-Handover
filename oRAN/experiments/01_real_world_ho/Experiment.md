@@ -1,7 +1,11 @@
-![alt text](66189b9a-0806-4a6b-85a3-26c139dc54f3.png)
+Walking from the end of the room to the other end, the UE is handed over from one eNB to another, and then walking back to the starting position. The handover is triggered by the UE's RSRP falling below a certain threshold. The handover is successful and the UE continues to communicate with the new eNB.
+![Alt text](data/figures/image.png)
 
-![alt text](2b44a06f-acb1-4ccd-9408-b436d5efdcf6.png)
+The UE is initially placed in the centre of the room on a chair. The chair is slowly rotated from facing on eNB to the other and back in a steady rhythm. The UE is handed over from one eNB to another, and then back to the original eNB multiple times in a Ping-Pong fashion. This highlights the instability of the algorithm.
+![Alt text](data/figures/image-1.png)
 
-![alt text](2e69ce8f-e081-4e3e-b30d-9748f395236c.png)
+The UE is initially placed in the centre of the room on a chair. Once the experiment has been started, and everything stabilises, the UE is left in a static environment. This plot highlights the instability of the signal strength.
+![Alt text](data/figures/image-2.png)
 
-![alt text](842525e5-541a-4e0c-8245-b568797223ff.png)
+The UE is initially placed in the centre of the room on a chair. Once the experiment has been started, and everything stabilises, the author walks in front of the chair - aiming to block LOS between the UE and the eNB. This plot highlights the relatively large impact of people in the environment affecting the signal strength.
+![Alt text](data/figures/image-3.png)
